@@ -4,10 +4,6 @@ spring:
   mvc:
     async:
       request-timeout: 3000s
-  datasource:
-    url: ${APP_DB_URL:jdbc:postgresql://localhost:5433/prompt_metadata}
-    username: ${DB_USERNAME:prompt_app}
-    password: ${DB_PASSWORD:prompt_app_password}
 
   data:
     redis:
@@ -22,8 +18,8 @@ spring:
       mode: never
 
   flyway:
-    enabled: true
-    locations: classpath:db/migration
+    enabled: false
+    locations: classpath:db/migration,classpath:db/react-agent-sdk
     # Existing pre-Flyway database: enable only for its first migration run.
     baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:true}
     baseline-version: 0
@@ -31,6 +27,17 @@ spring:
   application:
     name: gst-od-ai-orchestration
 app:
+  datasource:
+    host: ${APP_DB_HOST:localhost}
+    port: ${APP_DB_PORT:5433}
+    prompt:
+      jdbc-url: jdbc:postgresql://${app.datasource.host}:${app.datasource.port}/${PROMPT_DB_NAME:prompt_metadata}
+      username: ${PROMPT_DB_USERNAME:${DB_USERNAME:prompt_app}}
+      password: ${PROMPT_DB_PASSWORD:${DB_PASSWORD:prompt_app_password}}
+    memory:
+      jdbc-url: jdbc:postgresql://${app.datasource.host}:${app.datasource.port}/${MEMORY_DB_NAME:agent_memory}
+      username: ${MEMORY_DB_USERNAME:${DB_USERNAME:prompt_app}}
+      password: ${MEMORY_DB_PASSWORD:${DB_PASSWORD:prompt_app_password}}
   agent:
     workspace: ${AGENTSCOPE_WORKSPACE:./agent-workspace}
 #    model: ${AGENTSCOPE_MODEL:openai:gpt-4o-mini}
@@ -39,7 +46,7 @@ agent:
   gateway:
     base-url: ${AGENT_GATEWAY_BASE_URL:http://localhost:4000}
     api-key: ${AGENT_GATEWAY_API_KEY:local-gateway}
-    mcp-url: ${AGENT_GATEWAY_MCP_URL:http://localhost:4000/mcp}
+    mcp-url: ${AGENT_GATEWAY_MCP_URL:http://127.0.0.1:8082/mcp}
   model: ${AGENT_MODEL:llama3.1:8b}
 management:
   endpoints:
@@ -57,6 +64,9 @@ lakefs:
   secret-key: ${LAKEFS_SECRET_KEY:}
   repository: ${LAKEFS_REPOSITORY:brain-config}
   branch: ${LAKEFS_BRANCH:main}
+  path:
+    workflow: ${LAKEFS_PATH_WORKFLOW:ddod}
+    prompt: ${LAKEFS_PATH_PROMPT:onboarding_master_sop_7}
   # lakeFS SDK connection pool
   http:
     max-idle-connections: 1
@@ -65,3 +75,23 @@ lakefs:
 prompt:
   cache:
     ttl: ${PROMPT_CACHE_TTL:7d}
+
+react-agent:
+  model:
+    retry:
+      max-attempts: 3
+      initial-backoff: 500ms
+      max-backoff: 2s
+  prompts:
+    datasource-bean: ${PROMPT_DATASOURCE_BEAN_NAME:promptMetadataDataSource}
+    attach-reference-id: true
+    enabled: true
+    controller-enabled: true
+  mcp:
+    timeout: 30s
+  permissions:
+    allow:
+      - processWorkflowCommand
+  memory:
+    datasource-bean: ${AGENT_MEMORY_DATASOURCE_BEAN_NAME:agentMemoryDataSource}
+    postgres-enabled: ${REACT_AGENT_MEMORY_POSTGRES_ENABLED:true}

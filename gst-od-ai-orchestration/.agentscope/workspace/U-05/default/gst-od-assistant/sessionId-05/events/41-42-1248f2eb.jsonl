@@ -1,0 +1,2 @@
+{"type":"message","id":"62933fdb-24b8-4cd0-b37e-6ed57d23ffc7","parentId":"J-vyapWNK-ec3LUPl5uBmAY","timestamp":1794306363.242824000,"role":"USER","content":"next step"}
+{"type":"message","id":"gen-1794306361-p9C9XISpELlGju3HgDIo","parentId":"62933fdb-24b8-4cd0-b37e-6ed57d23ffc7","timestamp":1794306363.242824000,"role":"ASSISTANT","content":"The user is asking for \"next step\" but the onboarding is already completed. I should inform them that there are no further steps since the workflow is complete.\nYour onboarding is already complete — there are no further steps."}

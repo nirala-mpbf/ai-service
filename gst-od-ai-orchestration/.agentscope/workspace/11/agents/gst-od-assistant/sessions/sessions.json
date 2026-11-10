@@ -3,6 +3,10 @@
     "900" : {
       "summary" : "conversation offloaded",
       "updatedAt" : "2026-10-23T15:59:18.016118600Z"
+    },
+    "session123" : {
+      "summary" : "transcript updated (2 entries)",
+      "updatedAt" : "2026-11-10T09:45:21.886623400Z"
     }
   },
   "version" : 1
