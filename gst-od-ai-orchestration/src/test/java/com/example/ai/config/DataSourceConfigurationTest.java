@@ -1,13 +1,12 @@
 package com.example.ai.config;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-
-import javax.sql.DataSource;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class DataSourceConfigurationTest {
 
@@ -19,8 +18,11 @@ class DataSourceConfigurationTest {
         new ApplicationContextRunner()
                 .withInitializer(new ConfigDataApplicationContextInitializer())
                 .withUserConfiguration(DataSourceConfiguration.class)
-                .withPropertyValues("APP_DB_HOST=127.0.0.1", "APP_DB_PORT=5544",
-                        "PROMPT_DB_NAME=test_prompts", "MEMORY_DB_NAME=test_memory")
+                .withPropertyValues(
+                        "APP_DB_HOST=127.0.0.1",
+                        "APP_DB_PORT=5544",
+                        "PROMPT_DB_NAME=test_prompts",
+                        "MEMORY_DB_NAME=test_memory")
                 .run(context -> {
                     assertThat(context).hasNotFailed();
                     HikariDataSource prompts = context.getBean("promptMetadataDataSource", HikariDataSource.class);

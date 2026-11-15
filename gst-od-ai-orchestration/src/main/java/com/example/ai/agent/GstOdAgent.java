@@ -8,15 +8,9 @@ import com.meg.agentsdk.core.Agent;
         name = "gst-od-assistant",
         model = "${agent.model}",
         mcp = {
-                @McpServer(
-                        name = "brain-tools",
-                        url = "${agent.gateway.mcp-url}"
-                ),
-
+            @McpServer(name = "brain-tools", url = "${agent.gateway.mcp-url}"),
         },
         allowedTools = {"processWorkflowCommand"},
         workflow = "${lakefs.path.workflow}",
-        prompt = "${lakefs.path.prompt}"
-)
-public class GstOdAgent extends Agent {
-}
+        prompt = "${lakefs.path.prompt}")
+public class GstOdAgent extends Agent {}

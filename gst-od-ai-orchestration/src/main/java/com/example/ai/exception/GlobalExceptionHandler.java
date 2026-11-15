@@ -1,6 +1,7 @@
 package com.example.ai.exception;
 
 import com.meg.agentsdk.prompt.exception.LakefsException;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -16,18 +17,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.util.Map;
-
 @RestControllerAdvice
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
+
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(LakefsException.class)
     public ResponseEntity<Map<String, String>> promptFailure(LakefsException exception) {
         log.warn("Could not load the prompt for this request", exception);
-        return ResponseEntity.status(exception.getStatus())
-                .body(Map.of("error", "Unable to load the prompt."));
+        return ResponseEntity.status(exception.getStatus()).body(Map.of("error", "Unable to load the prompt."));
     }
 
     @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class})
@@ -50,19 +49,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Map<String, String>> routeNotFound() {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("error", "Endpoint not found."));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Endpoint not found."));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> unexpected(Exception exception) {
-        if (exception instanceof ErrorResponse response && response.getStatusCode().is4xxClientError()) {
-            return ResponseEntity.status(response.getStatusCode()).headers(response.getHeaders())
+        if (exception instanceof ErrorResponse response
+                && response.getStatusCode().is4xxClientError()) {
+            return ResponseEntity.status(response.getStatusCode())
+                    .headers(response.getHeaders())
                     .body(Map.of("error", response.getBody().getTitle()));
         }
 
         log.error("Unexpected request failure", exception);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "Unexpected server error"));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Unexpected server error"));
     }
 }

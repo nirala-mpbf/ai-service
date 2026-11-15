@@ -1,6 +1,19 @@
 server:
   port: ${SERVER_PORT:8080}
 spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:ai_local}
+    password: ${RABBITMQ_PASSWORD:ai_local_password}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        default-requeue-rejected: false
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
   mvc:
     async:
       request-timeout: 3000s
@@ -27,6 +40,18 @@ spring:
   application:
     name: gst-od-ai-orchestration
 app:
+  messaging:
+    enabled: ${RABBITMQ_COMMAND_LISTENER_ENABLED:true}
+    otp-command-queue: ${RABBITMQ_OTP_COMMAND_QUEUE:meg.otp.command.queue}
+    otp-response-queue: ${RABBITMQ_OTP_RESPONSE_QUEUE:meg.otp.response.queue}
+    chat-command-queue: ${RABBITMQ_CHAT_COMMAND_QUEUE:meg.chat.command.queue}
+    chat-response-queue: ${RABBITMQ_CHAT_RESPONSE_QUEUE:meg.chat.response.queue}
+    publish-confirm-timeout: 5s
+    chat-response-timeout: 60s
+    brain:
+      otp-url: ${BRAIN_OTP_URL:http://localhost:8081/api/otp}
+      connect-timeout: 5s
+      read-timeout: 15s
   datasource:
     host: ${APP_DB_HOST:localhost}
     port: ${APP_DB_PORT:5433}
