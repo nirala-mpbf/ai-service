@@ -1,2 +1,0 @@
-{"type":"message","id":"244ce499-f17d-4479-b598-d3bea0b7ab31","parentId":"d5086290-7dae-4d70-9984-f7296134347d:result:call-status","timestamp":1794645696.758682300,"role":"USER","content":"status"}
-{"type":"tool_result","id":"ddc7ce7f-55b4-4f29-8a29-0ea071555933:result:call-status","parentId":"244ce499-f17d-4479-b598-d3bea0b7ab31","timestamp":1794645696.762964500,"toolCallId":"call-status","name":"processWorkflowCommand","output":"status:WRONG","outputBlockTypes":["text"],"truncated":false}

@@ -1,0 +1,32 @@
+
+# Maven build output
+target/
+
+# AgentScope runtime data
+.agentscope/workspace/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Java
+*.class
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Local application configuration
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# OS files
+.DS_Store
+Thumbs.db

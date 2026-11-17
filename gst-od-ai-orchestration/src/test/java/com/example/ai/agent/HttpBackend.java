@@ -15,7 +15,25 @@ final class HttpBackend implements AutoCloseable {
     private final HttpServer server;
     private final ExecutorService workers = Executors.newCachedThreadPool();
     private final ObjectMapper json = new ObjectMapper();
+
+    private static Map<String, Object> workflowSchema(String operation) {
+        return Map.of(
+                "type",
+                "object",
+                "properties",
+                Map.of(
+                        "metadata",
+                        Map.of(
+                                "type",
+                                "object",
+                                "properties",
+                                Map.of(
+                                        "operation", Map.of("const", operation),
+                                        "referenceId", Map.of("type", "string")))));
+    }
+
     final AtomicInteger initializations = new AtomicInteger(), toolCalls = new AtomicInteger();
+    final List<JsonNode> mcpRequests = new CopyOnWriteArrayList<>();
     final List<String> modelRequests = new CopyOnWriteArrayList<>();
     final List<String> errors = new CopyOnWriteArrayList<>();
 
@@ -60,7 +78,13 @@ final class HttpBackend implements AutoCloseable {
                                                         "type",
                                                         "object",
                                                         "properties",
-                                                        Map.of("body", Map.of("type", "object"))),
+                                                        Map.of(
+                                                                "body",
+                                                                Map.of(
+                                                                        "oneOf",
+                                                                        List.of(
+                                                                                workflowSchema("GET_STATE"),
+                                                                                workflowSchema("SUBMIT_EVENT"))))),
                                                 "annotations",
                                                 Map.of("readOnlyHint", false)),
                                         Map.of(
@@ -74,6 +98,7 @@ final class HttpBackend implements AutoCloseable {
                                                 Map.of("readOnlyHint", false))));
                     case "tools/call" -> {
                         toolCalls.incrementAndGet();
+                        mcpRequests.add(input.path("params"));
                         yield Map.of(
                                 "content",
                                 List.of(Map.of(
@@ -136,23 +161,25 @@ final class HttpBackend implements AutoCloseable {
                                         "function",
                                         Map.of(
                                                 "name",
-                                                input.path("tools")
-                                                        .get(0)
-                                                        .path("function")
-                                                        .path("name")
-                                                        .asText(),
+                                                query.equals("no-reference") ? "verify_otp" : "processWorkflowCommand",
                                                 "arguments",
-                                                json.writeValueAsString(Map.of(
-                                                        "body",
-                                                        Map.of(
-                                                                "metadata",
-                                                                Map.of(
-                                                                        "operation",
-                                                                        "GET_STATE",
-                                                                        "referenceId",
-                                                                        "WRONG"),
-                                                                "payload",
-                                                                Map.of())))))))
+                                                json.writeValueAsString(
+                                                        query.equals("no-reference")
+                                                                ? Map.of()
+                                                                : Map.of(
+                                                                        "body",
+                                                                        Map.of(
+                                                                                "metadata",
+                                                                                        Map.of(
+                                                                                                "operation",
+                                                                                                "GET_STATE",
+                                                                                                "requestId",
+                                                                                                "req-" + query,
+                                                                                                "idempotencyKey",
+                                                                                                "idem-" + query,
+                                                                                                "referenceId",
+                                                                                                "WRONG"),
+                                                                                "payload", Map.of())))))))
                         : Map.of("role", "assistant", "content", toolResult);
                 Map<String, Object> chunk = Map.of(
                         "id",

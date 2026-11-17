@@ -1,4 +1,0 @@
-{"type":"message","id":"fc41db55-4047-4461-931f-e5c635678a2f","timestamp":1793876077.218009700,"role":"USER","content":"status"}
-{"type":"tool_use","id":"test:use:call-status","parentId":"fc41db55-4047-4461-931f-e5c635678a2f","timestamp":1793876077.220973000,"toolCallId":"call-status","name":"processWorkflowCommand","input":{"body":{"metadata":{"operation":"GET_STATE","referenceId":"WRONG"},"payload":{}}},"truncated":false}
-{"type":"tool_result","id":"160c668f-8bbc-4596-9558-f46f99a7a4fe:result:call-status","parentId":"test:use:call-status","timestamp":1793876077.220973000,"toolCallId":"call-status","name":"processWorkflowCommand","output":"status:WRONG","outputBlockTypes":["text"],"truncated":false}
-{"type":"message","id":"test","parentId":"160c668f-8bbc-4596-9558-f46f99a7a4fe:result:call-status","timestamp":1793876077.222008700,"role":"ASSISTANT","content":"\"status:WRONG\""}
